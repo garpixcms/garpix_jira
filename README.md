@@ -1,48 +1,62 @@
-# GarpixCMS Empty Template
+# Garpix Jira
 
-Cookiecutter template for GarpixCMS == 1.0.0.
+Интеграция с Jira Server. Является частью GarpixCMS.
 
-## Install
+## Быстрый старт
 
-1. Install Docker and docker-compose.
-   
-For Debian, Ubuntu:
+Установка через pipenv:
 
-```
-su
-apt update; apt upgrade -y; apt install -y curl; curl -sSL https://get.docker.com/ | sh; curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+```bash
+pipenv install garpix_jira
 ```
 
-Don't forget press CTRL+D to exit from super user account.
+Добавьте `garpix_jira` в `INSTALLED_APPS` и укажите адрес для миграций:
 
-2. Apply environment variables:
+```python
+# settings.py
+from garpixcms.settings import *  # noqa
 
-```
-cp example.env .env
-```
+INSTALLED_APPS += [
+    'garpix_jira',
+]
 
-3. Change a random string for `SECRET_KEY` and `POSTGRES_PASSWORD` in `.env`.
-
-4. Install dependencies:
-
-```
-pipenv install
-pipenv shell
+MIGRATION_MODULES['garpix_jira'] = 'app.migrations.garpix_jira'
 ```
 
-5. Up docker-compose, migrate database and create super user:
+Создайте директории и файлы:
 
+```bash
+backend/app/migrations/garpix_jira/
+backend/app/migrations/garpix_jira/__init__.py
 ```
-docker-compose up -d
+
+Сделайте миграции и мигрируйте:
+
+```bash
 python3 backend/manage.py makemigrations
 python3 backend/manage.py migrate
-python3 backend/manage.py createsuperuser
 ```
 
-6. Run the server:
+После этого необходимо создать адрес сервера, с которым будем интегрироваться и ввести учетные данные администратора Jira [http://localhost:8000/admin/garpix_jira/server/](http://localhost:8000/admin/garpix_jira/server/)
 
-```
-python3 backend/manage.py runserver
+Теперь, можно забрать данные из Jira в ваш проект. Для этого выполните команду (она будет периодически запускать данные):
+
+```bash
+python3 backend/manage.py jira_sync_all
 ```
 
-7. Enjoy!
+# Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+# Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+# License
+
+[MIT](LICENSE)
+
+---
+
+Developed by Garpix / [https://garpix.com](https://garpix.com)

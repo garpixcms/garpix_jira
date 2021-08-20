@@ -4,13 +4,9 @@ from ...models.server import Server
 
 
 class Command(BaseCommand):
-    help = 'Jira commands'
-
-    def add_arguments(self, parser):
-        parser.add_argument('command', type=str)
+    help = 'Jira sync all data'
 
     def handle(self, *args, **kwargs):
-        command = kwargs['command']
-        if command == 'sync':
+        while True:
             Server.sync_all()
             time.sleep(1200)

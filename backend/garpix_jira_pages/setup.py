@@ -8,7 +8,7 @@ with open(path.join(settings.BASE_DIR, '..', 'README.md'), encoding='utf-8') as 
     long_description = convert(f.read())
 
 setup(
-    name='garpix_jira',
+    name='garpix_jira_pages',
     version='1.1.0',
     description='',
     long_description=long_description,
@@ -30,8 +30,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'django >= 3.1',
-        'jira >= 3.0.1',
+        'garpixcms >= 2.0.2',
+        'garpix_jira >= 1.1.0',
     ],
 )
 

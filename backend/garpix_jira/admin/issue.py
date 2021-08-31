@@ -6,7 +6,6 @@ from ..models.issue import Issue
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('issue_key', 'name', 'assignee', 'creator', 'reporter', 'created_at', 'project')
     search_fields = ('issue_key', 'name', 'content')
-    # list_filter = ('project', 'assignee', 'creator', 'reporter', 'created_at')
     list_filter = ('project',)
     readonly_fields = ('issue_key', 'name', 'assignee', 'creator', 'reporter', 'created_at',
                        'project', 'content', 'due_date')

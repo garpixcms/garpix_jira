@@ -1,0 +1,43 @@
+{% extends 'garpixcms/base.html' %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+
+<div style="overflow-x: scroll;">
+    <table border="1" style="margin: 10px;">
+        <thead>
+        <tr>
+            <th>ФИО</th>
+            {% for date in dates %}
+                <th>{{ date|date:"d.m.Y" }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data %}
+            <tr>
+            {% for col in row %}
+                <td>
+                {% if forloop.counter > 1 %}
+                    {% if col.value == 0 %}
+                        <div style="background: red;">{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                    {% else %}
+                        {% if col.value > 6 %}
+                            <div>{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                        {% else %}
+                            <div style="background: yellow;">{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {{ col }}
+                {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

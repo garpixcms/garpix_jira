@@ -7,6 +7,7 @@ class User(models.Model):
     display_name = models.CharField(blank=True, default='', max_length=512, verbose_name='Отображаемое имя')
     user_key = models.CharField(max_length=50, verbose_name='Ключ пользователя')
     server = models.ForeignKey(Server, verbose_name='Сервер Jira', on_delete=models.CASCADE)
+    user_tracks_time = models.BooleanField(default=True, verbose_name='Пользователь трекает время?')
 
     class Meta:
         verbose_name = 'Пользователь'

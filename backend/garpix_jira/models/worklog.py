@@ -23,32 +23,30 @@ class WorkLog(models.Model):
     def sync(server: Server):
         from .issue import Issue
         from .user import User
+        from jira.exceptions import JIRAError
         jira = server.auth()
         users = User.objects.all()
         users_dict = {}
         for user in users:
             users_dict[user.user_key] = user
         for issue in Issue.objects.all():
-            worklogs = jira.worklogs(issue.issue_key)
+            try:
+                worklogs = jira.worklogs(issue.issue_key)
+            except JIRAError:
+                continue
             if worklogs is not None:
                 for worklog in worklogs:
-                    #
-                    author = None
                     if worklog.author is not None and worklog.author.key in users_dict:
                         author = users_dict[worklog.author.key]
-                    #
-                    worklog_dict = {
-                        'worklog_key': worklog.issueId,
-                        'author': author,
-                        'created_at': worklog.created,
-                        'started_at': worklog.started,
-                        'time_spent_seconds': worklog.timeSpentSeconds,
-                        'issue': issue,
-                    }
-                    try:
+                        worklog_dict = {
+                            'worklog_key': f'{worklog.issueId}__{worklog.id}',
+                            'author': author,
+                            'created_at': worklog.created,
+                            'started_at': worklog.started,
+                            'time_spent_seconds': worklog.timeSpentSeconds,
+                            'issue': issue,
+                        }
                         obj, created = WorkLog.objects.update_or_create(
                             worklog_key=worklog_dict['worklog_key'],
                             defaults=worklog_dict,
                         )
-                    except:
-                        print('Skipped')

@@ -2,6 +2,7 @@ from django.db import models
 from .user import User
 from .project import Project
 from .server import Server
+import time
 
 
 class Issue(models.Model):
@@ -32,33 +33,38 @@ class Issue(models.Model):
         for user in users:
             users_dict[user.user_key] = user
         for project in Project.objects.all():
-            issues = jira.search_issues(f'project={project.project_key}')
-            for issue in issues:
-                #
-                reporter = None
-                if issue.fields.reporter is not None and issue.fields.reporter.key in users_dict:
-                    reporter = users_dict[issue.fields.reporter.key]
-                #
-                creator = None
-                if issue.fields.creator is not None and issue.fields.creator.key in users_dict:
-                    creator = users_dict[issue.fields.creator.key]
-                #
-                assignee = None
-                if issue.fields.assignee is not None and issue.fields.assignee.key in users_dict:
-                    assignee = users_dict[issue.fields.assignee.key]
-                #
-                issue_dict = {
-                    'issue_key': issue.key,
-                    'name': issue.fields.summary,
-                    'content': issue.fields.description or "",
-                    'project': project,
-                    'reporter': reporter,
-                    'creator': creator,
-                    'assignee': assignee,
-                    'created_at': issue.fields.created,
-                    'due_date': issue.fields.duedate,
-                }
-                obj, created = Issue.objects.update_or_create(
-                    issue_key=issue_dict['issue_key'],
-                    defaults=issue_dict,
-                )
+            start_at = 0
+            issues = jira.search_issues(f'project={project.project_key}', startAt=start_at)
+            while len(issues) > 0:
+                for issue in issues:
+                    #
+                    reporter = None
+                    if issue.fields.reporter is not None and issue.fields.reporter.key in users_dict:
+                        reporter = users_dict[issue.fields.reporter.key]
+                    #
+                    creator = None
+                    if issue.fields.creator is not None and issue.fields.creator.key in users_dict:
+                        creator = users_dict[issue.fields.creator.key]
+                    #
+                    assignee = None
+                    if issue.fields.assignee is not None and issue.fields.assignee.key in users_dict:
+                        assignee = users_dict[issue.fields.assignee.key]
+                    #
+                    issue_dict = {
+                        'issue_key': issue.key,
+                        'name': issue.fields.summary,
+                        'content': issue.fields.description or "",
+                        'project': project,
+                        'reporter': reporter,
+                        'creator': creator,
+                        'assignee': assignee,
+                        'created_at': issue.fields.created,
+                        'due_date': issue.fields.duedate,
+                    }
+                    obj, created = Issue.objects.update_or_create(
+                        issue_key=issue_dict['issue_key'],
+                        defaults=issue_dict,
+                    )
+                time.sleep(1)
+                start_at += 50
+                issues = jira.search_issues(f'project={project.project_key}', startAt=start_at)

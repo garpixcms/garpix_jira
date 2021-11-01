@@ -1,46 +1,77 @@
 from garpix_page.models import BasePage
 import datetime
-from django.db.models import Sum
+from django.db import connection
+
+
+SQL_GET_WORKLOGS = '''
+SELECT day_date, garpix_jira_user.display_name as display_name, author_id, sum_time_spent_seconds
+FROM (SELECT day_date, author_id, SUM(time_spent_seconds) as sum_time_spent_seconds
+      FROM (SELECT generate_series(%s, %s, '1 day'::interval)::date as day_date) as dates
+      JOIN garpix_jira_worklog ON date(garpix_jira_worklog.created_at) = dates.day_date
+      GROUP BY author_id, day_date
+) worklogs
+JOIN garpix_jira_user ON garpix_jira_user.id = worklogs.author_id;
+'''
 
 
 class WorklogTableByDaysPage(BasePage):
     template = 'garpix_jira/pages/worklog_table_by_days_page.html'
 
     def get_context(self, request=None, *args, **kwargs):
-        from garpix_jira.models.worklog import WorkLog
         from garpix_jira.models.user import User as JiraUser
         context = super().get_context(request, *args, **kwargs)
-        now = datetime.date.today()
-        users = JiraUser.objects.filter(user_tracks_time=True).order_by('display_name')
+        # dates
+        date_to_str = request.GET.get('to')
+        if date_to_str is not None:
+            date_to = datetime.datetime.strptime(date_to_str, '%Y-%m-%d').date()
+        else:
+            date_to = datetime.date.today()
+        date_from_str = request.GET.get('from')
+        if date_from_str is not None:
+            date_from = datetime.datetime.strptime(date_from_str, '%Y-%m-%d').date()
+        else:
+            date_from = date_to - datetime.timedelta(days=40)
+        # days_between = 40
+        delta = date_to - date_from
+        dates = [date_to - datetime.timedelta(days=x) for x in range(delta.days + 1)]
+        # users
+        users = JiraUser.objects.filter(user_tracks_time=True).order_by('display_name').values_list('display_name', flat=True)
         # data
         data = []
-        dates = [now - datetime.timedelta(days=x) for x in range(14)]
-        for user in users:
-            data.append([
-                user.display_name,
-            ])
-            for date in dates:
-                seconds = WorkLog.objects.filter(
-                    started_at__date=date,
-                    author=user
-                ).aggregate(summ=Sum('time_spent_seconds'))['summ']
-                if seconds is None:
-                    hours_float = 0
-                else:
-                    hours_float = float('{:.2f}'.format(seconds / 3600))
-                # issues
-                issues_keys = ', '.join(WorkLog.objects.filter(
-                    started_at__date=date,
-                    author=user
-                ).select_related('issue').values_list('issue__issue_key', flat=True).distinct())
-                data[len(data) - 1].append({
-                    'value': hours_float,
-                    'issues_keys': issues_keys,
-                })
-
+        with connection.cursor() as cursor:
+            cursor.execute(SQL_GET_WORKLOGS, [date_from, date_to])
+            rows = cursor.fetchall()
+            #
+            d = {}
+            for item in rows:
+                day_date = item[0]
+                display_name = item[1]
+                value = item[3]
+                if display_name not in d:
+                    d[display_name] = {}
+                d[display_name][day_date] = value
+            for user in users:
+                data.append([user])
+                total = 0
+                for date in dates:
+                    if user in d and date in d[user]:
+                        hours_float = float('{:.2f}'.format(d[user][date] / 3600))
+                        total += hours_float
+                        data[-1].append({
+                            'value': hours_float,
+                            'issues_keys': '',
+                        })
+                    else:
+                        data[-1].append({
+                            'value': 0,
+                            'issues_keys': '',
+                        })
+                data[-1].insert(1, total)
         context.update({
             'dates': dates,
             'data': data,
+            'date_to': date_to,
+            'date_from': date_from,
         })
         return context
 

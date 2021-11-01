@@ -35,7 +35,7 @@ class WorklogTableByDaysPage(BasePage):
         delta = date_to - date_from
         dates = [date_to - datetime.timedelta(days=x) for x in range(delta.days + 1)]
         # users
-        users = JiraUser.objects.filter(user_tracks_time=True).order_by('display_name').values_list('display_name', flat=True)
+        users = JiraUser.objects.filter(user_tracks_time=True).order_by('display_name').values('display_name', 'id')
         # data
         data = []
         with connection.cursor() as cursor:
@@ -46,16 +46,17 @@ class WorklogTableByDaysPage(BasePage):
             for item in rows:
                 day_date = item[0]
                 display_name = item[1]
+                user_id = item[2]
                 value = item[3]
-                if display_name not in d:
-                    d[display_name] = {}
-                d[display_name][day_date] = value
+                if user_id not in d:
+                    d[user_id] = {}
+                d[user_id][day_date] = value
             for user in users:
-                data.append([user])
+                data.append([user['display_name']])
                 total = 0
                 for date in dates:
-                    if user in d and date in d[user]:
-                        hours_float = float('{:.2f}'.format(d[user][date] / 3600))
+                    if user['id'] in d and date in d[user['id']]:
+                        hours_float = float('{:.2f}'.format(d[user['id']][date] / 3600))
                         total += hours_float
                         data[-1].append({
                             'value': hours_float,

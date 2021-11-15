@@ -1,1 +1,2 @@
 from .worklog_table_by_days_page import WorklogTableByDaysPageAdmin
+from .projects_worklog_table_by_days_page import ProjectsWorklogTableByDaysPageAdmin  # noqa

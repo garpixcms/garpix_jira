@@ -1,5 +1,6 @@
 from django.db import models
 from .server import Server
+from .specialization import Specialization
 
 
 class User(models.Model):
@@ -7,6 +8,7 @@ class User(models.Model):
     display_name = models.CharField(blank=True, default='', max_length=512, verbose_name='Отображаемое имя')
     user_key = models.CharField(max_length=50, verbose_name='Ключ пользователя')
     server = models.ForeignKey(Server, verbose_name='Сервер Jira', on_delete=models.CASCADE)
+    specialization = models.ForeignKey(Specialization, verbose_name='Специализация', on_delete=models.SET_NULL, blank=True, null=True)
     user_tracks_time = models.BooleanField(default=True, verbose_name='Пользователь трекает время?')
 
     class Meta:

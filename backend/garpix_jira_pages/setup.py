@@ -31,7 +31,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'garpixcms >= 2.0.2',
-        'garpix_jira >= 1.4.0',
+        'garpix_jira >= 1.4.2',
     ],
 )
 

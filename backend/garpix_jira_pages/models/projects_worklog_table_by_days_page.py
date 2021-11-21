@@ -9,7 +9,7 @@ SELECT day_date, garpix_jira_project.name as name, garpix_jira_project.id, sum_t
 FROM (
     SELECT day_date, garpix_jira_issue.project_id, SUM(time_spent_seconds) as sum_time_spent_seconds
       FROM (SELECT generate_series(%s, %s, '1 day'::interval)::date as day_date) as dates
-      JOIN garpix_jira_worklog ON date(garpix_jira_worklog.created_at) = dates.day_date
+      JOIN garpix_jira_worklog ON date(garpix_jira_worklog.started_at) = dates.day_date
       JOIN garpix_jira_issue ON garpix_jira_issue.id = garpix_jira_worklog.issue_id
       GROUP BY garpix_jira_issue.project_id, day_date
 ) worklogs

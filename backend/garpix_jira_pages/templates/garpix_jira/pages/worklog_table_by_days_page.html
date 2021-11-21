@@ -6,11 +6,13 @@
     <form method="get" action="">
         <div class="form-group">
             <label for="from">Дата начала периода</label>
-            <input type="date" class="form-control" name="from" id="from" value="{{ date_from|date:"Y-m-d" }}" placeholder="Дата начала периода">
+            <input type="date" class="form-control" name="from" id="from" value="{{ date_from|date:"Y-m-d" }}"
+                   placeholder="Дата начала периода">
         </div>
         <div class="form-group">
             <label for="to">Дата конца периода</label>
-            <input type="date" class="form-control" name="to" id="to" value="{{ date_to|date:"Y-m-d" }}" placeholder="Дата конца периода">
+            <input type="date" class="form-control" name="to" id="to" value="{{ date_to|date:"Y-m-d" }}"
+                   placeholder="Дата конца периода">
         </div>
         <button type="submit" class="btn btn-primary">Применить</button>
     </form>
@@ -33,7 +35,11 @@
                         <td>
                             {% if forloop.counter > 2 %}
                                 {% if col.value == 0 %}
-                                    <div style="background: red;">{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                                    {% if col.is_weekend %}
+                                        <div style="background: black;">{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                                    {% else %}
+                                        <div style="background: red;">{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
+                                    {% endif %}
                                 {% else %}
                                     {% if col.value > 6 %}
                                         <div>{% include 'garpix_jira/include/worklog_table_cell.html' with cell=col %}</div>
@@ -51,6 +57,5 @@
             </tbody>
         </table>
     </div>
-
 
 {% endblock %}

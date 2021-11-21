@@ -5,4 +5,4 @@ from ..models.worklog import WorkLog
 @admin.register(WorkLog)
 class WorkLogAdmin(admin.ModelAdmin):
     list_display = ('worklog_key', 'author', 'time_spent_seconds', 'started_at')
-    search_fields = ('author__display_name',)
+    search_fields = ('author__display_name', 'issue__issue_key')

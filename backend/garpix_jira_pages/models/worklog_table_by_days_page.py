@@ -7,7 +7,7 @@ SQL_GET_WORKLOGS = '''
 SELECT day_date, garpix_jira_user.display_name as display_name, author_id, sum_time_spent_seconds
 FROM (SELECT day_date, author_id, SUM(time_spent_seconds) as sum_time_spent_seconds
       FROM (SELECT generate_series(%s, %s, '1 day'::interval)::date as day_date) as dates
-      JOIN garpix_jira_worklog ON date(garpix_jira_worklog.created_at) = dates.day_date
+      JOIN garpix_jira_worklog ON date(garpix_jira_worklog.started_at) = dates.day_date
       GROUP BY author_id, day_date
 ) worklogs
 JOIN garpix_jira_user ON garpix_jira_user.id = worklogs.author_id;
@@ -55,17 +55,20 @@ class WorklogTableByDaysPage(BasePage):
                 data.append([user['display_name']])
                 total = 0
                 for date in dates:
+                    day_date_is_weekend = date.weekday() > 4
                     if user['id'] in d and date in d[user['id']]:
                         hours_float = float('{:.2f}'.format(d[user['id']][date] / 3600))
                         total += hours_float
                         data[-1].append({
                             'value': hours_float,
                             'issues_keys': '',
+                            'is_weekend': day_date_is_weekend,
                         })
                     else:
                         data[-1].append({
                             'value': 0,
                             'issues_keys': '',
+                            'is_weekend': day_date_is_weekend,
                         })
                 data[-1].insert(1, total)
         context.update({

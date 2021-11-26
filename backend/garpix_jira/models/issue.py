@@ -27,6 +27,7 @@ class Issue(models.Model):
     def sync(server: Server):
         from .project import Project
         from .user import User
+        from jira.exceptions import JIRAError
         jira = server.auth()
         users = User.objects.all()
         users_dict = {}
@@ -34,7 +35,10 @@ class Issue(models.Model):
             users_dict[user.user_key] = user
         for project in Project.objects.all():
             start_at = 0
-            issues = jira.search_issues(f'project={project.project_key}', startAt=start_at)
+            try:
+                issues = jira.search_issues(f'project={project.project_key}', startAt=start_at)
+            except JIRAError:
+                issues = []
             while len(issues) > 0:
                 for issue in issues:
                     #

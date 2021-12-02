@@ -1,3 +1,7 @@
+### 1.6.1-1.6.2 (02.12.2021)
+
+- Исправление небольших ошибок при импорте данных из Jira.
+
 ### 1.6.0 (02.12.2021)
 
 - Добавлено больше полей для получения из Jira - `category`, `archived` для проекта; `resolution_date`, `resolution`, `time_estimate`, `time_spent`, `time_original_estimate` - для задачи.

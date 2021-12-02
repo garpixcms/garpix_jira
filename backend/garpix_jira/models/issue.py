@@ -4,6 +4,7 @@ from .project import Project
 from .server import Server
 import time
 import datetime
+from django.utils import timezone
 
 
 class Issue(models.Model):
@@ -34,6 +35,7 @@ class Issue(models.Model):
         from .project import Project
         from .user import User
         from jira.exceptions import JIRAError
+        current_tz = timezone.get_current_timezone()
         jira = server.auth()
         users = User.objects.all()
         users_dict = {}
@@ -62,7 +64,7 @@ class Issue(models.Model):
                     #
                     resolutiondate = None
                     if issue.fields.resolutiondate is not None:
-                        resolutiondate = datetime.datetime.strptime(issue.fields.resolutiondate, "%Y-%m-%dT%H:%M:%S.000+0000")
+                        resolutiondate = current_tz.localize(datetime.datetime.strptime(issue.fields.resolutiondate, "%Y-%m-%dT%H:%M:%S.000+0000"))
                     #
                     issue_dict = {
                         'issue_key': issue.key,

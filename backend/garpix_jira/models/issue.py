@@ -3,6 +3,7 @@ from .user import User
 from .project import Project
 from .server import Server
 import time
+import datetime
 
 
 class Issue(models.Model):
@@ -11,7 +12,7 @@ class Issue(models.Model):
     content = models.TextField(default='', blank=True, verbose_name='Содержимое')
     created_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата создания')
     due_date = models.DateField(blank=True, null=True, verbose_name='Дедлайн')
-    resolution_date = models.DateField(blank=True, null=True, verbose_name='Дата решения')
+    resolution_date = models.DateTimeField(blank=True, null=True, verbose_name='Дата решения')
     reporter = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Репортер', related_name='reporter_issues')
     creator = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Создатель', related_name='creator_issues')
     assignee = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Исполнитель', related_name='assignee_issues')
@@ -59,6 +60,10 @@ class Issue(models.Model):
                     if issue.fields.assignee is not None and issue.fields.assignee.key in users_dict:
                         assignee = users_dict[issue.fields.assignee.key]
                     #
+                    resolutiondate = None
+                    if issue.fields.resolutiondate is not None:
+                        resolutiondate = datetime.datetime.strptime(issue.fields.resolutiondate, "%Y-%m-%dT%H:%M:%S.000+0000")
+                    #
                     issue_dict = {
                         'issue_key': issue.key,
                         'name': issue.fields.summary,
@@ -69,7 +74,7 @@ class Issue(models.Model):
                         'assignee': assignee,
                         'created_at': issue.fields.created,
                         'due_date': issue.fields.duedate,
-                        'resolution_date': issue.fields.resolutiondate,
+                        'resolution_date': resolutiondate,
                         'resolution': issue.fields.resolution if issue.fields.resolution is not None else '',
                         'time_estimate': issue.fields.timeestimate if issue.fields.timeestimate is not None else 0,
                         'time_spent': issue.fields.timespent if issue.fields.timespent is not None else 0,

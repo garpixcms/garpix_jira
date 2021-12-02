@@ -1,3 +1,8 @@
+### 1.6.0 (02.12.2021)
+
+- Добавлено больше полей для получения из Jira - `category`, `archived` для проекта; `resolution_date`, `resolution`, `time_estimate`, `time_spent`, `time_original_estimate` - для задачи.
+- Убран модуль `garpix_jira_pages` ввиду его специфичности.
+
 ### 1.5.1 (26.11.2021)
 
 - Ошибка с парсингом issues, когда нет проекта.

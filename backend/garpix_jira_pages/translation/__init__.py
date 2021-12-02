@@ -1,4 +1,0 @@
-from .worklog_table_by_days_page import WorklogTableByDaysPageTranslationOptions
-from .projects_worklog_table_by_days_page import ProjectsWorklogTableByDaysPageTranslationOptions  # noqa
-from .user_project_worklog_table_by_days_page import UserProjectWorklogTableByDaysPageTranslationOptions  # noqa
-from .specialization_worklog_table_by_days_page import SpecializationWorklogTableByDaysPageTranslationOptions  # noqa

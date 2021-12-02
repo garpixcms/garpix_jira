@@ -11,10 +11,15 @@ class Issue(models.Model):
     content = models.TextField(default='', blank=True, verbose_name='Содержимое')
     created_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата создания')
     due_date = models.DateField(blank=True, null=True, verbose_name='Дедлайн')
+    resolution_date = models.DateField(blank=True, null=True, verbose_name='Дата решения')
     reporter = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Репортер', related_name='reporter_issues')
     creator = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Создатель', related_name='creator_issues')
     assignee = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Исполнитель', related_name='assignee_issues')
+    resolution = models.CharField(max_length=150, blank=True, default='', verbose_name='Решение')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='Проект')
+    time_estimate = models.IntegerField(default=0, verbose_name='Планово часов осталось')
+    time_spent = models.IntegerField(default=0, verbose_name='Часов потрачено')
+    time_original_estimate = models.IntegerField(default=0, verbose_name='Первоначальная оценка')
 
     class Meta:
         verbose_name = 'Задача'
@@ -64,6 +69,11 @@ class Issue(models.Model):
                         'assignee': assignee,
                         'created_at': issue.fields.created,
                         'due_date': issue.fields.duedate,
+                        'resolution_date': issue.fields.resolutiondate,
+                        'resolution': issue.fields.resolution if issue.fields.resolution is not None else '',
+                        'time_estimate': issue.fields.timeestimate if issue.fields.timeestimate is not None else 0,
+                        'time_spent': issue.fields.timespent if issue.fields.timespent is not None else 0,
+                        'time_original_estimate': issue.fields.timeoriginalestimate if issue.fields.timeoriginalestimate is not None else 0,
                     }
                     obj, created = Issue.objects.update_or_create(
                         issue_key=issue_dict['issue_key'],

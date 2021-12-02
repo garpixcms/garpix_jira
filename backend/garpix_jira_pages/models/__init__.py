@@ -1,4 +1,0 @@
-from .worklog_table_by_days_page import WorklogTableByDaysPage
-from .projects_worklog_table_by_days_page import ProjectsWorklogTableByDaysPage  # noqa
-from .user_project_worklog_table_by_days_page import UserProjectWorklogTableByDaysPage  # noqa
-from .specialization_worklog_table_by_days_page import SpecializationWorklogTableByDaysPage  # noqa

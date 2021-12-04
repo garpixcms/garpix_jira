@@ -9,7 +9,7 @@ with open(path.join(settings.BASE_DIR, '..', 'README.md'), encoding='utf-8') as 
 
 setup(
     name='garpix_jira',
-    version='1.6.3',
+    version='1.6.4',
     description='',
     long_description=long_description,
     url='https://github.com/garpixcms/garpix_jira',

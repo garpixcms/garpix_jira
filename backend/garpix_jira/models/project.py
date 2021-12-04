@@ -34,6 +34,7 @@ class Project(models.Model):
                     category = categories_dict[project.projectCategory.name]
                 else:
                     category = ProjectCategory.objects.create(title=project.projectCategory.name)
+                    categories_dict[category.title] = category
             project_dict = {
                 'project_id': int(project.id),
                 'project_key': project.key,

@@ -31,7 +31,7 @@ class Issue(models.Model):
         return f'{self.name}'
 
     @staticmethod
-    def sync(server: Server):
+    def sync(server: Server):  # noqa
         from .project import Project
         from .user import User
         from jira.exceptions import JIRAError

@@ -1,6 +1,5 @@
 from django.db import models
 from jira import JIRA
-import logging
 
 
 class Server(models.Model):

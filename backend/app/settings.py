@@ -1,13 +1,13 @@
 from garpixcms.settings import *  # noqa
 
-INSTALLED_APPS += [
+INSTALLED_APPS += [  # noqa
     'garpix_jira',
     'debug_toolbar',
 ]
 
-MIGRATION_MODULES['garpix_jira'] = 'app.migrations.garpix_jira'
+MIGRATION_MODULES['garpix_jira'] = 'app.migrations.garpix_jira'  # noqa
 
-MIDDLEWARE += [
+MIDDLEWARE += [  # noqa
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
